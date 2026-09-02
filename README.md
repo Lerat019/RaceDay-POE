@@ -44,5 +44,13 @@ This repository contains Part 1 of the Portfolio of Evidence: system planning an
 
 
 
+\## Prerequisites
+
+\- SQL Server Management Studio (SSMS) installed
+
+\- A running SQL Server instance (local or SQLEXPRESS)
+
+\- Git installed for cloning the repository
+
 YouTube Link: \[ ]
 
