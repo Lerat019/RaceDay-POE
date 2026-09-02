@@ -50,6 +50,7 @@ CREATE TABLE Category (
         REFERENCES Event(EventID)
 );
 
+-- Enrolment table
 CREATE TABLE Enrolment (
     EnrolmentID     INT IDENTITY(1,1) PRIMARY KEY,
     ParticipantID   INT      NOT NULL,
@@ -63,6 +64,7 @@ CREATE TABLE Enrolment (
         REFERENCES Category(CategoryID)
 );
 
+-- Result table
 CREATE TABLE Result (
     ResultID        INT IDENTITY(1,1) PRIMARY KEY,
     EnrolmentID     INT NOT NULL UNIQUE,
