@@ -1,4 +1,4 @@
-name: Validate Docs Folder
+name: Validating Docs Folder
 
 on:
   push:
@@ -26,3 +26,6 @@ jobs:
           test -f "docs/RaceDay_Database_Script.sql" && echo "SQL script found" || (echo "Missing SQL script" && exit 1)
           test -f "docs/PROG.png" && echo "ERD found" || (echo "Missing ERD" && exit 1)
           test -f "docs/RaceDay API Endpoint Plan.pdf" && echo "API endpoint plan found" || (echo "Missing API endpoint plan" && exit 1)
+
+
+"C:\Users\Student\Downloads\RaceDay-POE\docs\ci-success.png" 
