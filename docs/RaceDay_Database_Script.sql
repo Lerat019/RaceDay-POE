@@ -25,6 +25,7 @@ CREATE TABLE Participant (
     CreatedAt       DATETIME     NOT NULL DEFAULT GETDATE()
 );
 
+-- Event table
 CREATE TABLE Event (
     EventID         INT IDENTITY(1,1) PRIMARY KEY,
     OrganiserID     INT          NOT NULL,
@@ -37,6 +38,7 @@ CREATE TABLE Event (
         REFERENCES Organiser(OrganiserID)
 );
 
+-- Category table
 CREATE TABLE Category (
     CategoryID      INT IDENTITY(1,1) PRIMARY KEY,
     EventID         INT           NOT NULL,
