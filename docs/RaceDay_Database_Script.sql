@@ -1,3 +1,7 @@
+-- RaceDay Database Script
+-- Author: Lee
+-- Creates and seeds the RaceDay database schema
+
 CREATE TABLE Organiser (
     OrganiserID     INT IDENTITY(1,1) PRIMARY KEY,
     FirstName       VARCHAR(50)  NOT NULL,
