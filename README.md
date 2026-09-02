@@ -24,7 +24,7 @@ This repository contains Part 1 of the Portfolio of Evidence: system planning an
 
 
 
-\*\*Participant\*\* – Can create an account, browse events, enter an event by selecting a category, view their own enrolments, and track their personal results.
+\*\*Participant\*\* – Can create an account, browse the events, enter an event by selecting a category, view their own enrolments, and track their personal results.
 
 
 
