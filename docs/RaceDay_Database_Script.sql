@@ -2,6 +2,7 @@
 -- Author: Lee
 -- Creates and seeds the RaceDay database schema
 
+-- Organiser table
 CREATE TABLE Organiser (
     OrganiserID     INT IDENTITY(1,1) PRIMARY KEY,
     FirstName       VARCHAR(50)  NOT NULL,
@@ -12,6 +13,7 @@ CREATE TABLE Organiser (
     CreatedAt       DATETIME     NOT NULL DEFAULT GETDATE()
 );
 
+-- Participant table
 CREATE TABLE Participant (
     ParticipantID   INT IDENTITY(1,1) PRIMARY KEY,
     FirstName       VARCHAR(50)  NOT NULL,
