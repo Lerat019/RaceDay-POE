@@ -32,5 +32,17 @@ This repository contains Part 1 of the Portfolio of Evidence: system planning an
 
 
 
+\## Technologies Used
+
+\- Microsoft SQL Server (SSMS) for database design and scripting
+
+\- draw.io for the Entity Relationship Diagram
+
+\- GitHub Actions for CI/CD validation
+
+\- Microsoft Word for the API endpoint plan documentation
+
+
+
 YouTube Link: \[ ]
 
