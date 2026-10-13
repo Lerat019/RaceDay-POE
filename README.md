@@ -52,5 +52,7 @@ This repository contains Part 1 of the Portfolio of Evidence: system planning an
 
 \- Git installed for cloning the repository
 
-YouTube Link: \[ ]
+
+
+YouTube Link: \[https://youtu.be/HTAxVgrVB0g?si=ljazX0ObMBkD3X\_j ]
 
