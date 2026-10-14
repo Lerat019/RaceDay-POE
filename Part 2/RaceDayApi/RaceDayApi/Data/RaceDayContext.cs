@@ -44,7 +44,8 @@ public class RaceDayContext : DbContext
 
         b.Entity<Event>(e =>
         {
-            e.ToTable("Event");
+            e.ToTable("Event" , t => t.HasCheckConstraint("CK_Event_EventType", "EventType IN ('Run', 'Walk', 'Cycle')"));
+            e.Property(x => x.EventType).HasMaxLength(10).HasDefaultValue("Run");
             e.Property(x => x.EventName).HasMaxLength(100);
             e.Property(x => x.EventDate).HasColumnType("date");
             e.Property(x => x.Location).HasMaxLength(150);

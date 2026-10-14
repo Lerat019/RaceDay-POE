@@ -8,6 +8,8 @@ public class EventRequest
     [Required] public DateTime EventDate { get; set; }
     [Required, StringLength(150)] public string Location { get; set; } = string.Empty;
     [StringLength(500)] public string? Description { get; set; }
+    [Required, RegularExpression("^(Run|Walk|Cycle)$", ErrorMessage = "EventType must be Run, Walk or Cycle.")]
+    public string EventType { get; set; } = string.Empty;
 }
 
 public class EventResponse
@@ -18,4 +20,5 @@ public class EventResponse
     public DateTime EventDate { get; set; }
     public string Location { get; set; } = string.Empty;
     public string? Description { get; set; }
+    public string EventType { get; set; } = string.Empty;
 }

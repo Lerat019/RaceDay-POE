@@ -46,13 +46,15 @@ public class EventsController : ControllerBase
     }
 
     /// <summary>Creates a new event (Organiser only).</summary>
-    /// <remarks>Body: eventName, eventDate, location, optional description. The event is linked to the logged-in organiser.</remarks>
+    /// <remarks>Body: eventName, eventDate, location, eventType ("Run", "Walk" or "Cycle"), optional description. The event is linked to the logged-in organiser.</remarks>
     /// <response code="201">Event created.</response>
+    /// <response code="400">Invalid input, for example an unknown event type.</response>
     /// <response code="401">Not logged in.</response>
     /// <response code="403">Logged in as a Participant.</response>
     [HttpPost]
     [SessionAuthorize("Organiser")]
     [ProducesResponseType(typeof(EventResponse), StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> Create(EventRequest request)
@@ -65,6 +67,7 @@ public class EventsController : ControllerBase
             EventName = request.EventName.Trim(),
             EventDate = request.EventDate.Date,
             Location = request.Location.Trim(),
+            EventType = request.EventType,
             Description = request.Description
         };
         _db.Events.Add(ev);
@@ -74,14 +77,16 @@ public class EventsController : ControllerBase
     }
 
     /// <summary>Updates an event (Organiser who owns it).</summary>
-    /// <remarks>Body: eventName, eventDate, location, optional description.</remarks>
+    /// <remarks>Body: eventName, eventDate, location, eventType ("Run", "Walk" or "Cycle"), optional description.</remarks>
     /// <response code="200">Updated event.</response>
+    /// <response code="400">Invalid input, for example an unknown event type.</response>
     /// <response code="401">Not logged in.</response>
     /// <response code="403">Not an Organiser, or not the owner of this event.</response>
     /// <response code="404">No event with that ID.</response>
     [HttpPut("{id}")]
     [SessionAuthorize("Organiser")]
     [ProducesResponseType(typeof(EventResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -97,6 +102,7 @@ public class EventsController : ControllerBase
         ev.EventName = request.EventName.Trim();
         ev.EventDate = request.EventDate.Date;
         ev.Location = request.Location.Trim();
+        ev.EventType = request.EventType;
         ev.Description = request.Description;
         await _db.SaveChangesAsync();
 
@@ -140,6 +146,7 @@ public class EventsController : ControllerBase
         EventName = e.EventName,
         EventDate = e.EventDate,
         Location = e.Location,
+        EventType = e.EventType,
         Description = e.Description
     };
 }
