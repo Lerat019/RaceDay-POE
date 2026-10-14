@@ -18,7 +18,11 @@ public class AuthController : ControllerBase
         _db = db;
     }
 
-    
+    /// <summary>Registers a new Participant or Organiser account.</summary>
+    /// <remarks>Body: firstName, lastName, email, password (min 8 characters), role ("Organiser" or "Participant"), optional phoneNumber and dateOfBirth.</remarks>
+    /// <response code="201">Account created. Returns the user record.</response>
+    /// <response code="400">Invalid input or unknown role.</response>
+    /// <response code="409">Email already registered.</response>
     [HttpPost("register")]
     [ProducesResponseType(typeof(UserResponse), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -27,7 +31,7 @@ public class AuthController : ControllerBase
     {
         var email = request.Email.Trim().ToLowerInvariant();
 
-        
+        // Email must be unique across BOTH tables so login finds one account
         var taken = await _db.Organisers.AnyAsync(o => o.Email == email)
                     || await _db.Participants.AnyAsync(p => p.Email == email);
         if (taken)
@@ -85,7 +89,10 @@ public class AuthController : ControllerBase
         return BadRequest(new { message = "Role must be 'Organiser' or 'Participant'." });
     }
 
-    
+    /// <summary>Logs a user in and starts a server-side session.</summary>
+    /// <remarks>Body: email and password. The session stores the user's ID and role for later requests.</remarks>
+    /// <response code="200">Logged in. Returns the user record.</response>
+    /// <response code="401">Invalid credentials.</response>
     [HttpPost("login")]
     [ProducesResponseType(typeof(UserResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -130,7 +137,9 @@ public class AuthController : ControllerBase
         return Unauthorized(new { message = "Invalid credentials." });
     }
 
-   
+    /// <summary>Ends the current session.</summary>
+    /// <response code="204">Logged out.</response>
+    /// <response code="401">Not logged in.</response>
     [HttpPost("logout")]
     [SessionAuthorize]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
