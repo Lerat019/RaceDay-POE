@@ -1,3 +1,6 @@
+## This workflow validates the required Part 1 documentation file exists
+
+
 name: Validating Docs Folder
 
 on:
