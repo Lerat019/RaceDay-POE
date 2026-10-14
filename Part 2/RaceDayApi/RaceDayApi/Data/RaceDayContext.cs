@@ -16,7 +16,7 @@ public class RaceDayContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder b)
     {
-        // Table names match the Part 1 SQL script (singular)
+        // Table names that match Part 1
         b.Entity<Organiser>(e =>
         {
             e.ToTable("Organiser");
@@ -80,7 +80,7 @@ public class RaceDayContext : DbContext
             e.HasOne<Organiser>().WithMany().HasForeignKey(x => x.CapturedBy);
         });
 
-        // Your SQL script has no cascade deletes, so match that
+        // SQL script has no cascade deletes
         foreach (var fk in b.Model.GetEntityTypes().SelectMany(t => t.GetForeignKeys()))
             fk.DeleteBehavior = DeleteBehavior.Restrict;
     }
