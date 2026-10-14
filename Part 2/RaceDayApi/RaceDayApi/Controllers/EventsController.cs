@@ -18,8 +18,6 @@ public class EventsController : ControllerBase
         _db = db;
     }
 
-    /// <summary>Lists all upcoming events (public).</summary>
-    /// <response code="200">Array of upcoming events, soonest first.</response>
     [HttpGet]
     [ProducesResponseType(typeof(List<EventResponse>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetUpcoming()
@@ -32,9 +30,7 @@ public class EventsController : ControllerBase
         return Ok(events.Select(ToResponse).ToList());
     }
 
-    /// <summary>Retrieves one event by ID (public).</summary>
-    /// <response code="200">The event.</response>
-    /// <response code="404">No event with that ID.</response>
+    
     [HttpGet("{id}")]
     [ProducesResponseType(typeof(EventResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -45,12 +41,7 @@ public class EventsController : ControllerBase
         return Ok(ToResponse(ev));
     }
 
-    /// <summary>Creates a new event (Organiser only).</summary>
-    /// <remarks>Body: eventName, eventDate, location, eventType ("Run", "Walk" or "Cycle"), optional description. The event is linked to the logged-in organiser.</remarks>
-    /// <response code="201">Event created.</response>
-    /// <response code="400">Invalid input, for example an unknown event type.</response>
-    /// <response code="401">Not logged in.</response>
-    /// <response code="403">Logged in as a Participant.</response>
+    
     [HttpPost]
     [SessionAuthorize("Organiser")]
     [ProducesResponseType(typeof(EventResponse), StatusCodes.Status201Created)]
@@ -76,13 +67,7 @@ public class EventsController : ControllerBase
         return CreatedAtAction(nameof(GetById), new { id = ev.EventID }, ToResponse(ev));
     }
 
-    /// <summary>Updates an event (Organiser who owns it).</summary>
-    /// <remarks>Body: eventName, eventDate, location, eventType ("Run", "Walk" or "Cycle"), optional description.</remarks>
-    /// <response code="200">Updated event.</response>
-    /// <response code="400">Invalid input, for example an unknown event type.</response>
-    /// <response code="401">Not logged in.</response>
-    /// <response code="403">Not an Organiser, or not the owner of this event.</response>
-    /// <response code="404">No event with that ID.</response>
+    
     [HttpPut("{id}")]
     [SessionAuthorize("Organiser")]
     [ProducesResponseType(typeof(EventResponse), StatusCodes.Status200OK)]
@@ -109,12 +94,7 @@ public class EventsController : ControllerBase
         return Ok(ToResponse(ev));
     }
 
-    /// <summary>Deletes an event (Organiser who owns it).</summary>
-    /// <response code="204">Event deleted.</response>
-    /// <response code="401">Not logged in.</response>
-    /// <response code="403">Not an Organiser, or not the owner of this event.</response>
-    /// <response code="404">No event with that ID.</response>
-    /// <response code="409">Event still has categories; delete those first.</response>
+    
     [HttpDelete("{id}")]
     [SessionAuthorize("Organiser")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]

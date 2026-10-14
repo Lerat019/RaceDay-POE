@@ -8,9 +8,9 @@ public class RegisterRequest
     [Required, StringLength(50)] public string LastName { get; set; } = string.Empty;
     [Required, EmailAddress, StringLength(100)] public string Email { get; set; } = string.Empty;
     [Required, MinLength(8)] public string Password { get; set; } = string.Empty;
-    [Required] public string Role { get; set; } = string.Empty;   // "Organiser" or "Participant"
+    [Required] public string Role { get; set; } = string.Empty;   
     [StringLength(20)] public string? PhoneNumber { get; set; }
-    public DateTime? DateOfBirth { get; set; }                    // Participants only
+    public DateTime? DateOfBirth { get; set; }                   
 }
 
 public class LoginRequest

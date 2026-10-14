@@ -25,7 +25,7 @@ public class SessionAuthorizeAttribute : Attribute, IAuthorizationFilter
             return;
         }
 
-        // Logged in, but wrong role
+        // Logged in but wrong role
         if (_roles.Length > 0 && !_roles.Contains(role))
         {
             context.Result = new ObjectResult(new { message = "Your role cannot access this." })

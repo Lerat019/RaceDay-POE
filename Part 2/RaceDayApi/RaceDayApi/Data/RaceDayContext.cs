@@ -16,7 +16,7 @@ public class RaceDayContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder b)
     {
-        // Table names that match Part 1
+        
         b.Entity<Organiser>(e =>
         {
             e.ToTable("Organiser");
@@ -76,12 +76,12 @@ public class RaceDayContext : DbContext
         {
             e.ToTable("Result");
             e.Property(x => x.FinishTime).HasColumnType("time");
-            e.HasIndex(x => x.EnrolmentID).IsUnique();   // one result per enrolment
+            e.HasIndex(x => x.EnrolmentID).IsUnique();  
             e.HasOne<Enrolment>().WithMany().HasForeignKey(x => x.EnrolmentID);
             e.HasOne<Organiser>().WithMany().HasForeignKey(x => x.CapturedBy);
         });
 
-        // SQL script has no cascade deletes
+        
         foreach (var fk in b.Model.GetEntityTypes().SelectMany(t => t.GetForeignKeys()))
             fk.DeleteBehavior = DeleteBehavior.Restrict;
     }
