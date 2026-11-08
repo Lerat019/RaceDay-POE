@@ -32,6 +32,17 @@ namespace RaceDayMVC.Controllers
             }
 
             return View(eventsList);
+
+
+        }
+        // GET: /Organiser/Create
+        public IActionResult Create()
+        {
+            if (HttpContext.Session.GetString("UserRole") != "Organiser")
+            {
+                return RedirectToAction("Login", "Account");
+            }
+            return View();
         }
     }
 }
