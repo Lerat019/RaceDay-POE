@@ -22,9 +22,38 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                        </li>
+
+                        @if (Context.Session.GetString("UserRole") == null)
+                        {
+                            // User is NOT logged in
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="Account" asp-action="Login">Login</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="Account" asp-action="Register">Register</a>
+                            </li>
+                        }
+                        else
+                        {
+                            // User IS logged in
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="Account" asp-action="Logout">Logout</a>
+                            </li>
+
+                            // Show specific links based on Role
+                            @if (Context.Session.GetString("UserRole") == "Organiser")
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-controller="Organiser" asp-action="Index">Organiser Dashboard</a>
+                                </li>
+                            }
+                            else if (Context.Session.GetString("UserRole") == "Participant")
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-controller="Participant" asp-action="Index">My Events</a>
+                                </li>
+                            }
+                        }
                     </ul>
                 </div>
             </div>
