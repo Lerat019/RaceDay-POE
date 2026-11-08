@@ -1,17 +1,37 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using RaceDayMVC.Services;
+using RaceDayMVC.ViewModels;
+using System.Text.Json;
 
 namespace RaceDayMVC.Controllers
 {
     public class OrganiserController : Controller
     {
-        public IActionResult Index()
+        private readonly IApiService _apiService;
+
+        public OrganiserController(IApiService apiService)
         {
-            // Check if user is logged in and is an Organiser
+            _apiService = apiService;
+        }
+
+        public async Task<IActionResult> Index()
+        {
             if (HttpContext.Session.GetString("UserRole") != "Organiser")
             {
                 return RedirectToAction("Login", "Account");
             }
-            return View();
+
+            var response = await _apiService.GetAsync("events");
+
+            var eventsList = new List<EventViewModel>();
+
+            if (response.IsSuccessStatusCode)
+            {
+                var responseData = await response.Content.ReadAsStringAsync();
+                eventsList = JsonSerializer.Deserialize<List<EventViewModel>>(responseData, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+            }
+
+            return View(eventsList);
         }
     }
 }
