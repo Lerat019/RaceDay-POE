@@ -7,8 +7,14 @@
         public ApiService(HttpClient httpClient, IConfiguration configuration)
         {
             _httpClient = httpClient;
-            
-            _httpClient.BaseAddress = new Uri(configuration["ApiSettings:BaseUrl"]);
+
+            var baseUrl = configuration["ApiSettings:BaseUrl"];
+            if (string.IsNullOrEmpty(baseUrl))
+            {
+                throw new Exception("API Base URL is missing in appsettings.json");
+            }
+
+            _httpClient.BaseAddress = new Uri(baseUrl);
         }
 
         public async Task<HttpResponseMessage> GetAsync(string endpoint)

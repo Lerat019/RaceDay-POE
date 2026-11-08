@@ -115,6 +115,13 @@ namespace RaceDayApi.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
+                    b.Property<string>("EventType")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)")
+                        .HasDefaultValue("Run");
+
                     b.Property<string>("Location")
                         .IsRequired()
                         .HasMaxLength(150)
@@ -127,7 +134,10 @@ namespace RaceDayApi.Migrations
 
                     b.HasIndex("OrganiserID");
 
-                    b.ToTable("Event", (string)null);
+                    b.ToTable("Event", null, t =>
+                        {
+                            t.HasCheckConstraint("CK_Event_EventType", "EventType IN ('Run', 'Walk', 'Cycle')");
+                        });
                 });
 
             modelBuilder.Entity("RaceDayApi.Models.Organiser", b =>

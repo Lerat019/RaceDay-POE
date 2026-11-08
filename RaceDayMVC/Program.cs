@@ -12,7 +12,18 @@ builder.Services.AddSession(options =>
     options.Cookie.IsEssential = true;
 });
 
-builder.Services.AddHttpClient<IApiService, RaceDayMVC.Services.ApiService>();
+builder.Services.AddSingleton<System.Net.CookieContainer>();
+
+builder.Services.AddHttpClient<IApiService, RaceDayMVC.Services.ApiService>()
+    .ConfigurePrimaryHttpMessageHandler(sp =>
+    {
+        var cookieContainer = sp.GetRequiredService<System.Net.CookieContainer>();
+        return new System.Net.Http.HttpClientHandler
+        {
+            CookieContainer = cookieContainer,
+            UseCookies = true
+        };
+    });
 
 var app = builder.Build();
 

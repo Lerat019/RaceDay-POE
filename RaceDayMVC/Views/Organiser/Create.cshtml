@@ -17,9 +17,9 @@
                         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
                         <div class="mb-3">
-                            <label asp-for="Name" class="form-label"></label>
-                            <input asp-for="Name" class="form-control" />
-                            <span asp-validation-for="Name" class="text-danger"></span>
+                            <label asp-for="EventName" class="form-label"></label>
+                            <input asp-for="EventName" class="form-control" />
+                            <span asp-validation-for="EventName" class="text-danger"></span>
                         </div>
 
                         <div class="mb-3">
@@ -38,10 +38,9 @@
                                 <label asp-for="EventType" class="form-label"></label>
                                 <select asp-for="EventType" class="form-select">
                                     <option value="">-- Select Type --</option>
-                                    <option value="Marathon">Marathon</option>
-                                    <option value="Half Marathon">Half Marathon</option>
-                                    <option value="10K">10K</option>
-                                    <option value="5K">5K</option>
+                                    <option value="Run">Run</option>
+                                    <option value="Walk">Walk</option>
+                                    <option value="Cycle">Cycle</option>
                                 </select>
                                 <span asp-validation-for="EventType" class="text-danger"></span>
                             </div>
