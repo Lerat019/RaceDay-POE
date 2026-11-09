@@ -21,6 +21,19 @@ builder.Services.AddHttpClient<IApiService, RaceDayMVC.Services.ApiService>()
         return new System.Net.Http.HttpClientHandler
         {
             CookieContainer = cookieContainer,
+            UseCookies = true,
+     
+            ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => true
+        };
+    });
+
+builder.Services.AddHttpClient<IApiService, RaceDayMVC.Services.ApiService>()
+    .ConfigurePrimaryHttpMessageHandler(sp =>
+    {
+        var cookieContainer = sp.GetRequiredService<System.Net.CookieContainer>();
+        return new System.Net.Http.HttpClientHandler
+        {
+            CookieContainer = cookieContainer,
             UseCookies = true
         };
     });

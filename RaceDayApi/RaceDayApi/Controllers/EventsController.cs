@@ -1,9 +1,11 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Http;
 using RaceDayApi.Auth;
 using RaceDayApi.Data;
 using RaceDayApi.Dtos;
 using RaceDayApi.Models;
+using RaceDayApi.Services;
 
 namespace RaceDayApi.Controllers;
 
@@ -12,14 +14,14 @@ namespace RaceDayApi.Controllers;
 public class EventsController : ControllerBase
 {
     private readonly RaceDayContext _db;
+    private readonly IBlobService _blobService;
 
-    public EventsController(RaceDayContext db)
+    public EventsController(RaceDayContext db, IBlobService blobService)
     {
         _db = db;
+        _blobService = blobService;
     }
 
-    /// <summary>Lists all upcoming events (public).</summary>
-    /// <response code="200">Array of upcoming events, soonest first.</response>
     [HttpGet]
     [ProducesResponseType(typeof(List<EventResponse>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetUpcoming()
@@ -32,9 +34,6 @@ public class EventsController : ControllerBase
         return Ok(events.Select(ToResponse).ToList());
     }
 
-    /// <summary>Retrieves one event by ID (public).</summary>
-    /// <response code="200">The event.</response>
-    /// <response code="404">No event with that ID.</response>
     [HttpGet("{id}")]
     [ProducesResponseType(typeof(EventResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -45,21 +44,21 @@ public class EventsController : ControllerBase
         return Ok(ToResponse(ev));
     }
 
-    /// <summary>Creates a new event (Organiser only).</summary>
-    /// <remarks>Body: eventName, eventDate, location, eventType ("Run", "Walk" or "Cycle"), optional description. The event is linked to the logged-in organiser.</remarks>
-    /// <response code="201">Event created.</response>
-    /// <response code="400">Invalid input, for example an unknown event type.</response>
-    /// <response code="401">Not logged in.</response>
-    /// <response code="403">Logged in as a Participant.</response>
     [HttpPost]
     [SessionAuthorize("Organiser")]
     [ProducesResponseType(typeof(EventResponse), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
-    public async Task<IActionResult> Create(EventRequest request)
+    public async Task<IActionResult> Create([FromForm] EventRequest request, IFormFile? BannerFile)
     {
         var organiserId = HttpContext.Session.GetInt32("UserId")!.Value;
+
+        string? imageUrl = null;
+        if (BannerFile != null && BannerFile.Length > 0)
+        {
+            imageUrl = await _blobService.UploadFileAsync(BannerFile);
+        }
 
         var ev = new Event
         {
@@ -68,21 +67,16 @@ public class EventsController : ControllerBase
             EventDate = request.EventDate.Date,
             Location = request.Location.Trim(),
             EventType = request.EventType,
-            Description = request.Description
+            Description = request.Description,
+            BannerImageUrl = imageUrl
         };
+
         _db.Events.Add(ev);
         await _db.SaveChangesAsync();
 
         return CreatedAtAction(nameof(GetById), new { id = ev.EventID }, ToResponse(ev));
     }
 
-    /// <summary>Updates an event (Organiser who owns it).</summary>
-    /// <remarks>Body: eventName, eventDate, location, eventType ("Run", "Walk" or "Cycle"), optional description.</remarks>
-    /// <response code="200">Updated event.</response>
-    /// <response code="400">Invalid input, for example an unknown event type.</response>
-    /// <response code="401">Not logged in.</response>
-    /// <response code="403">Not an Organiser, or not the owner of this event.</response>
-    /// <response code="404">No event with that ID.</response>
     [HttpPut("{id}")]
     [SessionAuthorize("Organiser")]
     [ProducesResponseType(typeof(EventResponse), StatusCodes.Status200OK)]
@@ -104,17 +98,12 @@ public class EventsController : ControllerBase
         ev.Location = request.Location.Trim();
         ev.EventType = request.EventType;
         ev.Description = request.Description;
+
         await _db.SaveChangesAsync();
 
         return Ok(ToResponse(ev));
     }
 
-    /// <summary>Deletes an event (Organiser who owns it).</summary>
-    /// <response code="204">Event deleted.</response>
-    /// <response code="401">Not logged in.</response>
-    /// <response code="403">Not an Organiser, or not the owner of this event.</response>
-    /// <response code="404">No event with that ID.</response>
-    /// <response code="409">Event still has categories; delete those first.</response>
     [HttpDelete("{id}")]
     [SessionAuthorize("Organiser")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
@@ -147,6 +136,7 @@ public class EventsController : ControllerBase
         EventDate = e.EventDate,
         Location = e.Location,
         EventType = e.EventType,
-        Description = e.Description
+        Description = e.Description,
+        BannerImageUrl = e.BannerImageUrl
     };
 }
