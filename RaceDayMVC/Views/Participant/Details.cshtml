@@ -1,0 +1,42 @@
+﻿@model RaceDayMVC.ViewModels.EventViewModel
+
+@{
+    ViewData["Title"] = "Event Details";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow border-0">
+                <div class="card-header bg-success text-white">
+                    <h3 class="mb-0">@Model.EventName</h3>
+                </div>
+                <div class="card-body">
+                    <h5 class="card-title text-muted mb-4">@Model.EventType Event</h5>
+
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <p><strong>Date:</strong> <br /> @Model.EventDate.ToLongDateString()</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong>Location:</strong> <br /> @Model.Location</p>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <h6><strong>Description</strong></h6>
+                        <p>@Model.Description</p>
+                    </div>
+
+                    <hr />
+
+                    <div class="d-grid gap-2 mt-4">
+                        <!-- We will make this button work in the next step -->
+                        <button class="btn btn-primary btn-lg">Enroll in this Event</button>
+                        <a asp-action="Index" class="btn btn-outline-secondary">Back to Events</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
