@@ -15,6 +15,7 @@ namespace RaceDayMVC.Controllers
             _apiService = apiService;
         }
 
+        // GET: /Organiser (Dashboard)
         public async Task<IActionResult> Index()
         {
             if (HttpContext.Session.GetString("UserRole") != "Organiser")
@@ -33,9 +34,8 @@ namespace RaceDayMVC.Controllers
             }
 
             return View(eventsList);
-
-
         }
+
         // GET: /Organiser/Create
         public IActionResult Create()
         {
@@ -45,6 +45,7 @@ namespace RaceDayMVC.Controllers
             }
             return View();
         }
+
         // POST: /Organiser/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -57,17 +58,13 @@ namespace RaceDayMVC.Controllers
 
             if (ModelState.IsValid)
             {
-                // 1. Convert the form data to JSON
                 var json = JsonSerializer.Serialize(model);
                 var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-                // 2. Send it to the API to be saved in the database
-                // (Assuming your API endpoint for creating an event is POST /api/events)
                 var response = await _apiService.PostAsync("events", content);
 
                 if (response.IsSuccessStatusCode)
                 {
-                    // Success! Go back to the dashboard
                     return RedirectToAction(nameof(Index));
                 }
                 else
@@ -75,13 +72,75 @@ namespace RaceDayMVC.Controllers
                     var errorContent = await response.Content.ReadAsStringAsync();
                     ModelState.AddModelError("", $"API Error ({(int)response.StatusCode}): {errorContent}");
                 }
+            }
+            return View(model);
+        }
 
-                    // If we get here, the API rejected it
-                    ModelState.AddModelError("", "There was an error saving the event. Please check your data and try again.");
+        // GET: /Organiser/ManageCategories/5
+        public async Task<IActionResult> ManageCategories(int id)
+        {
+            if (HttpContext.Session.GetString("UserRole") != "Organiser")
+            {
+                return RedirectToAction("Login", "Account");
             }
 
-            // If validation fails or API fails, reload the form with the data the user typed
-            return View(model);
+            // Fetch the Event Details
+            var eventResponse = await _apiService.GetAsync($"events/{id}");
+            if (!eventResponse.IsSuccessStatusCode) return NotFound();
+
+            var eventData = await eventResponse.Content.ReadAsStringAsync();
+            var eventDetails = JsonSerializer.Deserialize<EventViewModel>(eventData, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+
+            // Fetch existing Categories
+            var catResponse = await _apiService.GetAsync($"events/{id}/categories");
+            var categoriesList = new List<CategoryViewModel>();
+
+            if (catResponse.IsSuccessStatusCode)
+            {
+                var catData = await catResponse.Content.ReadAsStringAsync();
+                categoriesList = JsonSerializer.Deserialize<List<CategoryViewModel>>(catData, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+            }
+
+            ViewBag.EventDetails = eventDetails;
+            ViewBag.EventId = id;
+
+            return View(categoriesList);
+        }
+
+        // POST: /Organiser/CreateCategory
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreateCategory(int eventId, string categoryName, double distance, int maxParticipants, decimal entryFee)
+        {
+            if (HttpContext.Session.GetString("UserRole") != "Organiser")
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            var payload = new
+            {
+                CategoryName = categoryName,
+                Distance = distance,
+                MaxParticipants = maxParticipants,
+                EntryFee = entryFee
+            };
+
+            var json = JsonSerializer.Serialize(payload);
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+            // Send to API
+            var response = await _apiService.PostAsync($"events/{eventId}/categories", content);
+
+            if (response.IsSuccessStatusCode)
+            {
+                TempData["SuccessMessage"] = "Category added successfully!";
+            }
+            else
+            {
+                TempData["ErrorMessage"] = "Failed to add category. Please try again.";
+            }
+
+            return RedirectToAction(nameof(ManageCategories), new { id = eventId });
         }
     }
 }

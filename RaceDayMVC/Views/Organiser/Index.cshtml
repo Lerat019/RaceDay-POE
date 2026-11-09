@@ -26,7 +26,6 @@
                             <th>Event Name</th>
                             <th>Date</th>
                             <th>Location</th>
-                            <th>Distance</th>
                             <th>Type</th>
                             <th>Actions</th>
                         </tr>
@@ -40,7 +39,10 @@
                                 <td>@ev.Location</td>
                                 <td>@ev.EventType</td>
                                 <td>
-                                
+                                    <!-- New Categories Button -->
+                                    <a asp-action="ManageCategories" asp-route-id="@ev.EventId" class="btn btn-sm btn-info text-white">Categories</a>
+
+                                    <!-- Edit and Delete Buttons (Will work later) -->
                                     <button class="btn btn-sm btn-primary">Edit</button>
                                     <button class="btn btn-sm btn-danger">Delete</button>
                                 </td>

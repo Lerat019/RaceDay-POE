@@ -1,0 +1,65 @@
+﻿@model List<RaceDayMVC.ViewModels.EnrolmentViewModel>
+
+@{
+    ViewData["Title"] = "My Events";
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>My Enrolled Events</h2>
+        <a asp-action="Index" class="btn btn-outline-primary">Browse More Events</a>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+            @if (Model == null || Model.Count == 0)
+            {
+                <div class="alert alert-info text-center">
+                    You haven't enrolled in any events yet. <a asp-action="Index">Find a race to join!</a>
+                </div>
+            }
+            else
+            {
+                <table class="table table-hover align-middle">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Event Name</th>
+                            <th>Category</th>
+                            <th>Date Enrolled</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var enrolment in Model)
+                        {
+                            <tr>
+                                <td class="fw-bold">@enrolment.EventName</td>
+                                <td>@enrolment.CategoryName</td>
+                                <td>@enrolment.EnrolmentDate.ToShortDateString()</td>
+                                <td>
+                                    <!-- Color-coded status badge as requested by the rubric -->
+                                    @if (enrolment.Status == "Confirmed")
+                                    {
+                                        <span class="badge bg-success">Confirmed</span>
+                                    }
+                                    else if (enrolment.Status == "Cancelled")
+                                    {
+                                        <span class="badge bg-danger">Cancelled</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-warning text-dark">@enrolment.Status</span>
+                                    }
+                                </td>
+                                <td>
+                                    <a asp-action="Details" asp-route-id="@enrolment.EventId" class="btn btn-sm btn-outline-secondary">View Event</a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+        </div>
+    </div>
+</div>
