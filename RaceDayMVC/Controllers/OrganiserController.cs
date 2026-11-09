@@ -142,5 +142,70 @@ namespace RaceDayMVC.Controllers
 
             return RedirectToAction(nameof(ManageCategories), new { id = eventId });
         }
+
+            // GET: /Organiser/Edit/5
+public async Task<IActionResult> Edit(int id)
+        {
+            if (HttpContext.Session.GetString("UserRole") != "Organiser")
+                return RedirectToAction("Login", "Account");
+
+            var response = await _apiService.GetAsync($"events/{id}");
+            if (!response.IsSuccessStatusCode) return NotFound();
+
+            var responseData = await response.Content.ReadAsStringAsync();
+            var eventDetails = JsonSerializer.Deserialize<EventViewModel>(responseData, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+
+            return View(eventDetails);
+        }
+
+        // POST: /Organiser/Edit/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(int id, EventViewModel model)
+        {
+            if (HttpContext.Session.GetString("UserRole") != "Organiser")
+                return RedirectToAction("Login", "Account");
+
+            if (ModelState.IsValid)
+            {
+                var json = JsonSerializer.Serialize(model);
+                var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+                var response = await _apiService.PutAsync($"events/{id}", content);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    return RedirectToAction(nameof(Index));
+                }
+                else
+                {
+                    var errorContent = await response.Content.ReadAsStringAsync();
+                    ModelState.AddModelError("", $"API Error ({(int)response.StatusCode}): {errorContent}");
+                }
+            }
+            return View(model);
+        }
+
+        // POST: /Organiser/Delete/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Delete(int id)
+        {
+            if (HttpContext.Session.GetString("UserRole") != "Organiser")
+                return RedirectToAction("Login", "Account");
+
+            var response = await _apiService.DeleteAsync($"events/{id}");
+
+            if (response.IsSuccessStatusCode)
+            {
+                TempData["SuccessMessage"] = "Event deleted successfully.";
+            }
+            else
+            {
+                TempData["ErrorMessage"] = "Could not delete event. It might have categories attached.";
+            }
+
+            return RedirectToAction(nameof(Index));
+        }
     }
 }

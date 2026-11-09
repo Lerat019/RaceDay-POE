@@ -11,7 +11,7 @@ public class EventsTests
 {
     // Pretend organiser 1 is logged in, unless a different ID is given.
     private static EventsController NewController(RaceDayContext db, int organiserId = 1) =>
-        new EventsController(db).WithSession(organiserId, "Organiser");
+        new EventsController(db, null!).WithSession(organiserId, "Organiser");
 
     private static EventRequest NewRequest(string name = "Test 10K") => new()
     {
@@ -46,7 +46,7 @@ public class EventsTests
         using var db = TestHelpers.NewDb();
         var controller = NewController(db);
 
-        var result = await controller.Create(NewRequest());
+        var result = await controller.Create(NewRequest(), null);
 
         var created = Assert.IsType<CreatedAtActionResult>(result);
         var response = Assert.IsType<EventResponse>(created.Value);
@@ -60,7 +60,7 @@ public class EventsTests
         using var db = TestHelpers.NewDb();
         var controller = NewController(db, organiserId: 7);
 
-        await controller.Create(NewRequest());
+        await controller.Create(NewRequest(), null);
 
         Assert.Equal(7, db.Events.Single().OrganiserID);
     }
@@ -166,7 +166,7 @@ public class EventsTests
         using var db = TestHelpers.NewDb();
         Seed(db, daysFromToday: 10);   // upcoming
         Seed(db, daysFromToday: -10);  // already happened
-        var controller = new EventsController(db).WithSession(); // not logged in: this endpoint is public
+        var controller = new EventsController(db, null!).WithSession(); // not logged in: this endpoint is public
 
         var result = await controller.GetUpcoming();
 
@@ -179,7 +179,7 @@ public class EventsTests
     public async Task GetById_MissingEvent_Returns404()
     {
         using var db = TestHelpers.NewDb();
-        var controller = new EventsController(db).WithSession();
+        var controller = new EventsController(db, null!).WithSession();
 
         var result = await controller.GetById(999);
 
