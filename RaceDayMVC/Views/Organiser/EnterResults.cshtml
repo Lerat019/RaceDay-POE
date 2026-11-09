@@ -1,0 +1,74 @@
+﻿@model List<RaceDayMVC.ViewModels.EnrolmentViewModel>
+
+@{
+    ViewData["Title"] = "Enter Results";
+    var eventDetails = ViewBag.EventDetails as RaceDayMVC.ViewModels.EventViewModel;
+    int eventId = ViewBag.EventId;
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2>Enter Results: @eventDetails?.EventName</h2>
+            <p class="text-muted">Capture finish times and positions for enrolled participants.</p>
+        </div>
+        <a asp-action="Index" class="btn btn-secondary">Back to Dashboard</a>
+    </div>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success">@TempData["SuccessMessage"]</div>
+    }
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
+    }
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+            @if (Model == null || Model.Count == 0)
+            {
+                <div class="alert alert-info text-center">
+                    No participants have enrolled in this event yet.
+                </div>
+            }
+            else
+            {
+                <form asp-action="SubmitResults" asp-route-id="@eventId" method="post">
+                    <table class="table table-hover align-middle">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Participant</th>
+                                <th>Category</th>
+                                <th>Finish Time (hh:mm:ss)</th>
+                                <th>Position</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @for (int i = 0; i < Model.Count; i++)
+                            {
+                                <tr>
+                                    <!-- Hidden fields to pass the Enrolment ID to the controller -->
+                                    <input type="hidden" name="results[@i].EnrolmentId" value="@Model[i].EnrolmentId" />
+
+                                    <td class="fw-bold">@Model[i].ParticipantName</td>
+                                    <td>@Model[i].CategoryName</td>
+                                    <td>
+                                        <input type="text" name="results[@i].FinishTime" class="form-control form-control-sm" placeholder="e.g., 01:15:30" />
+                                    </td>
+                                    <td>
+                                        <input type="number" name="results[@i].Position" class="form-control form-control-sm" placeholder="e.g., 12" />
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+
+                    <div class="d-grid mt-3">
+                        <button type="submit" class="btn btn-warning text-dark fw-bold">Publish Results</button>
+                    </div>
+                </form>
+            }
+        </div>
+    </div>
+</div>

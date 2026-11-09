@@ -207,5 +207,72 @@ public async Task<IActionResult> Edit(int id)
 
             return RedirectToAction(nameof(Index));
         }
+
+        // GET: /Organiser/EnterResults/5
+        public async Task<IActionResult> EnterResults(int id)
+        {
+            if (HttpContext.Session.GetString("UserRole") != "Organiser")
+                return RedirectToAction("Login", "Account");
+
+            // Fetch the Event Details
+            var eventResponse = await _apiService.GetAsync($"events/{id}");
+            if (!eventResponse.IsSuccessStatusCode) return NotFound();
+            var eventData = await eventResponse.Content.ReadAsStringAsync();
+            var eventDetails = JsonSerializer.Deserialize<EventViewModel>(eventData, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+
+            // Fetch the enrolments for this event
+            var enrolResponse = await _apiService.GetAsync($"events/{id}/enrolments");
+            var enrolmentsList = new List<EnrolmentViewModel>();
+
+            if (enrolResponse.IsSuccessStatusCode)
+            {
+                var enrolData = await enrolResponse.Content.ReadAsStringAsync();
+                enrolmentsList = JsonSerializer.Deserialize<List<EnrolmentViewModel>>(enrolData, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+            }
+
+            ViewBag.EventDetails = eventDetails;
+            ViewBag.EventId = id;
+
+            return View(enrolmentsList);
+        }
+
+            // POST: /Organiser/SubmitResults/5
+            [HttpPost]
+            [ValidateAntiForgeryToken]
+            public async Task<IActionResult> SubmitResults(int id, List<ResultViewModel> results)
+            {
+                if (HttpContext.Session.GetString("UserRole") != "Organiser")
+                    return RedirectToAction("Login", "Account");
+
+                int successCount = 0;
+
+                // Loop through each row and send the result to the API
+                foreach (var result in results)
+                {
+                    // Skip if the organiser left the fields blank
+                    if (result.Position == null && string.IsNullOrEmpty(result.FinishTime.ToString()))
+                        continue;
+
+                    var payload = new
+                    {
+                        EnrolmentId = result.EnrolmentId,
+                        FinishTime = result.FinishTime,
+                        Position = result.Position
+                    };
+
+                    var json = JsonSerializer.Serialize(payload);
+                    var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+                    var response = await _apiService.PostAsync($"results", content);
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        successCount++;
+                    }
+                }
+
+                TempData["SuccessMessage"] = $"Successfully published {successCount} results!";
+                return RedirectToAction(nameof(Index));
+            }
+        }
     }
-}

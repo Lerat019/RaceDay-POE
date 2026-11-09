@@ -120,5 +120,30 @@ namespace RaceDayMVC.Controllers
 
             return View(enrolmentsList);
         }
+
+            // GET: /Participant/MyResults
+public async Task<IActionResult> MyResults()
+{
+    if (HttpContext.Session.GetString("UserRole") != "Participant")
+    {
+        return RedirectToAction("Login", "Account");
     }
+
+    int? participantId = HttpContext.Session.GetInt32("UserId");
+    if (participantId == null) return RedirectToAction("Login", "Account");
+
+    // Fetch results from the API
+    var response = await _apiService.GetAsync($"participants/{participantId}/results");
+    
+    var resultsList = new List<ParticipantResultViewModel>();
+
+    if (response.IsSuccessStatusCode)
+    {
+        var responseData = await response.Content.ReadAsStringAsync();
+        resultsList = JsonSerializer.Deserialize<List<ParticipantResultViewModel>>(responseData, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+    }
+
+    return View(resultsList);
 }
+        }
+    }
