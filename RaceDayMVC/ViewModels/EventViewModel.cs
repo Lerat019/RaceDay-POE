@@ -4,27 +4,22 @@ namespace RaceDayMVC.ViewModels
 {
     public class EventViewModel
     {
-        public int Id { get; set; }
+        public int EventId { get; set; }
 
         [Required(ErrorMessage = "Event name is required")]
-        public string EventName { get; set; }
+        public string EventName { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "Description is required")]
-        public string Description { get; set; }
+        public string Description { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "Date is required")]
         [DataType(DataType.Date)]
-        public DateTime Date { get; set; }
+        public DateTime EventDate { get; set; }
 
         [Required(ErrorMessage = "Location is required")]
-        public string Location { get; set; }
-
-        [Required(ErrorMessage = "Distance is required")]
-        public string Distance { get; set; }
+        public string Location { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "Event type is required")]
-        public string EventType { get; set; }
-
-        public string? BannerImageUrl { get; set; }
+        public string EventType { get; set; } = string.Empty;
     }
 }
