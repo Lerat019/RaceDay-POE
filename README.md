@@ -10,7 +10,7 @@
 
 RaceDay is a web-based event management system for the South African road running, walking and cycling community. Organisers create and manage events, categories and results. Participants browse events, enrol in categories and track their personal performance.
 
-- [Part 3 – MVC Web Application](#part-3--mvc-web-application)
+\- \[Part 3 – MVC Web Application](#part-3--mvc-web-application)
 
 \- \[Part 2 – RESTful API Development](#part-2--restful-api-development)
 
@@ -24,7 +24,7 @@ RaceDay is a web-based event management system for the South African road runnin
 
 An ASP.NET Core MVC frontend that consumes the Part 2 API. The MVC application contains no direct database access; all data is fetched and sent via an `HttpClient` service. It also features containerisation using Docker.
 
-**YouTube video link:** [Paste your unlisted YouTube link here]
+**YouTube video link:** [https://youtu.be/BSUVLF2XtQ0?si=qHvvnIOSLhS32z6W]
 
 ## Tech stack (Frontend)
 
