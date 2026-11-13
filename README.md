@@ -34,6 +34,7 @@ A RESTful ASP.NET Core Web API that powers the RaceDay system, built to the endp
 
 
 
+
 \## Tech stack
 
 \- ASP.NET Core 8 Web API (C#)

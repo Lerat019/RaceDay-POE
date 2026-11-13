@@ -10,6 +10,7 @@ builder.Services.AddSession(options =>
     options.IdleTimeout = TimeSpan.FromMinutes(30);
     options.Cookie.HttpOnly = true;
     options.Cookie.IsEssential = true;
+    options.Cookie.SecurePolicy = CookieSecurePolicy.None; // ALLOW HTTP COOKIES
 });
 
 builder.Services.AddSingleton<System.Net.CookieContainer>();
