@@ -10,7 +10,7 @@
 
 RaceDay is a web-based event management system for the South African road running, walking and cycling community. Organisers create and manage events, categories and results. Participants browse events, enrol in categories and track their personal performance.
 
-
+- [Part 3 – MVC Web Application](#part-3--mvc-web-application)
 
 \- \[Part 2 – RESTful API Development](#part-2--restful-api-development)
 
@@ -20,7 +20,82 @@ RaceDay is a web-based event management system for the South African road runnin
 
 \---
 
+# Part 3 – MVC Web Application
 
+An ASP.NET Core MVC frontend that consumes the Part 2 API. The MVC application contains no direct database access; all data is fetched and sent via an `HttpClient` service. It also features containerisation using Docker.
+
+**YouTube video link:** [Paste your unlisted YouTube link here]
+
+## Tech stack (Frontend)
+
+- ASP.NET Core 8 MVC (C#)
+- Bootstrap 5 for responsive UI design
+- Session-based authentication (storing user role and ID in the MVC session)
+- Azure Blob Storage (via API integration for event banner uploads)
+- Docker for containerisation
+- GitHub Actions CI
+
+## Project structure
+
+RaceDay-POE/
+├── .github/workflows/      CI workflows
+├── docs/                   Part 1 documents and CI screenshots
+├── RaceDayApi/             Part 2 Web API (Backend)
+└── RaceDayMVC/             Part 3 MVC App (Frontend)
+    ├── Controllers/        Account, Organiser, Participant
+    ├── Services/           ApiService (HttpClient wrapper)
+    ├── ViewModels/         MVC-specific data models
+    └── Views/              Razor UI pages
+    ├── Dockerfile          Container instructions
+
+## The two roles (UI Experience)
+
+**Organiser**
+- Dashboard showing all created events and action buttons
+- Create new events with required fields (name, description, date, location, type)
+- Manage categories for specific events
+- View enrolled participants and capture their finish times/positions
+- Edit and Delete events
+
+**Participant**
+- Browse upcoming events in a card-based layout
+- View event details and enrol in a specific category
+- Track personal enrolments via the "My Events" page
+- View past race history (times and positions) on the "My Results" page
+
+Users are routed to specific dashboards upon login based on their role. Unauthenticated users are redirected to the login page.
+
+## Setup and run
+
+**Requirements:** .NET 8 SDK, SQL Server (LocalDB or Express), and the EF tool. 
+*(You must also run the API simultaneously for the MVC app to function).*
+
+1. Clone the repository.
+2. Open the solution in Visual Studio and configure "Multiple Startup Projects" (set `RaceDayApi` and `RaceDayMVC` to Start).
+3. Verify the connection string in `RaceDayApi/appsettings.json`.
+4. Run the application (F5). The API will open in Swagger, and the MVC app will open in a browser window.
+5. Open the MVC app (e.g., `http://localhost:32769`) and register/login.
+
+## Docker Setup
+
+The MVC application is containerised. To build and run the app using Docker, execute the following from the root directory:
+
+1. Build the Docker image:
+   `docker build -t raceday-mvc -f RaceDayMVC/Dockerfile .`
+
+2. Run the container:
+   `docker run -d -p 8080:8080 --name raceday-web raceday-mvc`
+
+The application will be accessible at `http://localhost:8080`.
+
+## Design notes
+
+- **MVC Architecture:** The frontend relies on Razor Views and ViewModels. It uses an `ApiService` injected via dependency injection to call the backend endpoints.
+- **Session Management:** Login credentials are sent to the API. Upon success, the MVC app stores the User ID and Role in `HttpContext.Session` to manage role-based authorization and UI rendering.
+- **Azure Blob Storage:** File uploads are handled via `MultipartFormDataContent` on the frontend, which are POSTed to the API. The API communicates with Azure Blob Storage (Azurite locally) and saves the image URL to the database.
+- **CI/CD:** GitHub Actions automatically builds and tests the API and the MVC application on every push.
+
+---
 
 \# Part 2 – RESTful API Development
 
